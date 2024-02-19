@@ -40,6 +40,9 @@ def interact(body1, body2):
     q1 = body1.charge
     q2 = body2.charge
 
+    fixed1 = body1.is_fixed
+    fixed2 = body2.is_fixed
+
     #if the distance between the bodies is less than the sum of their radii, then there is a collition
     if dist < r1 + r2:
 
@@ -62,13 +65,21 @@ def interact(body1, body2):
         #velocity of the center of mass along the unit vector is calculated
         vd_r = (v1_r*m1 + v2_r*m2)/mass
 
+        if body1.is_fixed:
+            vd_r = v1_r
+
+        if body2.is_fixed:
+            vd_r = v2_r
+
         #final velocities along the unit vector are calculated
         v1f_r = -v1_r + 2*vd_r
         v2f_r = -v2_r + 2*vd_r
 
         #finally we add the final velocities along the unit vector to the constant components of the velocity
-        body1.v_x, body1.v_y, body1.v_z = v1_tx + v1f_r*x, v1_ty + v1f_r*y, v1_tz + v1f_r*z
-        body2.v_x, body2.v_y, body2.v_z = v2_tx + v2f_r*x, v2_ty + v2f_r*y, v2_tz + v2f_r*z
+        if not body1.is_fixed:
+            body1.v_x, body1.v_y, body1.v_z = v1_tx + v1f_r*x, v1_ty + v1f_r*y, v1_tz + v1f_r*z
+        if not body2.is_fixed:
+            body2.v_x, body2.v_y, body2.v_z = v2_tx + v2f_r*x, v2_ty + v2f_r*y, v2_tz + v2f_r*z
 
         #if the bodies are conductive, then the charges of the bodies are redistributed in proportion to their surface areas
         if body1.is_conductive and body2.is_conductive:
@@ -97,8 +108,10 @@ def interact(body1, body2):
         f_x, f_y, f_z = force*x, force*y, force*z
 
         #the accelerations of the bodies are calculated and added to their cumulative accelerations from previous calculations
-        body1.a_x, body1.a_y, body1.a_z = body1.a_x + f_x/m1, body1.a_y + f_y/m1, body1.a_z + f_z/m1
-        body2.a_x, body2.a_y, body2.a_z = body2.a_x - f_x/m2, body2.a_y - f_y/m2, body2.a_z - f_z/m2
+        if not body1.is_fixed:
+            body1.a_x, body1.a_y, body1.a_z = body1.a_x + f_x/m1, body1.a_y + f_y/m1, body1.a_z + f_z/m1
+        if not body2.is_fixed:
+            body2.a_x, body2.a_y, body2.a_z = body2.a_x - f_x/m2, body2.a_y - f_y/m2, body2.a_z - f_z/m2
 
 #this function moves bodies according to their velocities and changes their velocities according to their accelerations, finally their accelerations are reset to be calculated again
 def apply(body, dt):

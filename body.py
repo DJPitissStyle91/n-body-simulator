@@ -1,7 +1,7 @@
 #this class has no setters or getters as it is slower than a dictionary
 class Body:
 
-    def __init__(self, x_pos, y_pos, z_pos, v_x, v_y, v_z, mass, charge=0, is_conductive=False, radius=0):
+    def __init__(self, x_pos, y_pos, z_pos, v_x, v_y, v_z, mass, charge=0, is_conductive=False, radius=0, is_fixed=False):
 
         #Check if mass is not zero as it would result in infinite acceleration.
         if mass == 0:
@@ -20,6 +20,7 @@ class Body:
         self.a_x = 0
         self.a_y = 0
         self.a_z = 0
+        self.is_fixed = is_fixed
 
 class ZeroMassException(Exception):
     pass
